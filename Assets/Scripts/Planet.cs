@@ -4,8 +4,14 @@ using System;
 
 public class Planet : MonoBehaviour {
 
+    public Camera mainCamera;
+
     // Radius of the planet
     public float radius = 10f;
+
+    private int lodMax;
+
+    public int LODMax { get { return this.lodMax; } }
 
     // Set to true for a sphere, false for cube.
     public bool Spherized;
@@ -27,16 +33,15 @@ public class Planet : MonoBehaviour {
     // Create, initialize, and render the planet surfaces
     private void CreatePlanetSurface(PlanetFace planetFace) {
         // Calculate the max LOD based on the radius of the planet.
-        int iLODMax = (int)Math.Log((float)((2.0f * Math.PI * radius) / 4.0f), 2);
-        int cubeSize = iLODMax * 2;
-        int halfCube = cubeSize / 2;
+        lodMax = (int)Math.Log((float)((2.0f * Math.PI * radius) / 4.0f), 2);
+        int cubeSize = lodMax * 2;
 
         GameObject go = new GameObject("Surface");
         go.transform.parent = this.transform;
         go.transform.position = transform.position;
         PlanetSurface planetSurface = go.AddComponent<PlanetSurface>();
-        planetSurface.Initialize(this, planetFace, cubeSize, halfCube);
-        planetSurface.GenerateMesh(Spherized);
+        planetSurface.InitializeRoot(this, planetFace, lodMax, cubeSize);
+        //planetSurface.GenerateMesh(Spherized);
         planetSurfaces.Add(planetSurface);
     }
 
